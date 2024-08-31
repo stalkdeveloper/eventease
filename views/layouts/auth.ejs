@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Event ease</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully responsive admin theme which can be used to build CRM, CMS, ERP etc." name="description" />
+    <meta content="Techzaa" name="author" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="/images/favicon.ico">
+
+    <!-- App css -->
+    <link href="/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
+
+    <!-- Icons css -->
+    <link href="/css/icons.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Main css -->
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+
+<body class="authentication-bg position-relative">
+    <div class="account-pages position-relative">
+        <div class="container">
+            <%- body %> <!-- This is where the content of the view will be injected -->
+        </div>
+    </div>
+
+    <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>
+<script>
+    $(document).on('click', '.toggle-password', function () {
+        var passwordInput = $(this).prev('input');
+        if (passwordInput.attr('type') === 'password') {
+            passwordInput.attr('type', 'text');
+            $(this).addClass('show-password');
+        } else {
+            passwordInput.attr('type', 'password');
+            $(this).removeClass('show-password');
+        }
+    });
+
+    $(document).ready(function () {
+        $('#loginForm').on('submit', function (e) {
+            e.preventDefault();
+
+            $('.form-control').removeClass('is-invalid');
+            $('.invalid-feedback').hide();
+
+            var isValid = true;
+
+            var email = $('#email').val();
+            if (!email || !validateEmail(email)) {
+                $('#email').addClass('is-invalid');
+                $('#email').next('.invalid-feedback').show();
+                isValid = false;
+            }
+
+            var password = $('#password').val();
+            if (!password) {
+                $('#password').addClass('is-invalid');
+                $('#password').next('.invalid-feedback').show();
+                isValid = false;
+            }
+
+            if (isValid) {
+                this.submit();
+            }
+        });
+
+        $(document).ready(function () {
+            $('#registerForm').on('submit', function (e) {
+                e.preventDefault();
+        
+                $('.form-control').removeClass('is-invalid');
+                $('.invalid-feedback').hide();
+        
+                var isValid = true;
+        
+                var name = $('#name').val();
+                if (!name) {
+                    $('#name').addClass('is-invalid');
+                    $('#name').next('.invalid-feedback').show();
+                    isValid = false;
+                }
+        
+                var email = $('#email').val();
+                if (!email || !validateEmail(email)) {
+                    $('#email').addClass('is-invalid');
+                    $('#email').next('.invalid-feedback').show();
+                    isValid = false;
+                }
+        
+                var password = $('#password').val();
+                if (!password) {
+                    $('#password').addClass('is-invalid');
+                    $('#password').next('.invalid-feedback').show();
+                    isValid = false;
+                }
+        
+                if (isValid) {
+                    this.submit();
+                }
+            });
+        
+            // Function to validate email format
+            function validateEmail(email) {
+                var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+        });
+        
+
+        function validateEmail(email) {
+            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    });
+</script>
+
