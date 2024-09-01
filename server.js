@@ -15,24 +15,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-
 app.use(ejsLayouts);
-app.set('layout', 'layouts/auth');
+/* app.set('layout', 'layouts/admin');  */
 
-/* app.use('/admin', (req, res, next) => {
-    app.set('layout', 'layouts/admin');
+app.use('/', (req, res, next) => {
+    res.locals.layout = 'layouts/auth';
     next();
-}); */
+});
+
+const authRoutes = require('./app/routes/auth/AuthRoute');
+app.use('/', authRoutes);
 
 app.use('/admin', (req, res, next) => {
     res.locals.layout = 'layouts/admin';
     next();
 });
 
-/* Define routes for different sections */
+// Import and use admin routes
 const adminRoutes = require('./app/routes/admin/AdminRoute');
-app.use('/', adminRoutes);
+app.use('/admin', adminRoutes);
 
+// Import and use API routes
 const apiRoutes = require('./app/routes/api/ApiRoute');
 app.use('/api', apiRoutes);
 
@@ -40,10 +43,7 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-/* app.use((req, res, next) => {
-    res.status(404).render('404');
-}); */
-
+// Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Server error:', err);
     res.status(500).json({

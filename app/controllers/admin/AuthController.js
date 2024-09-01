@@ -6,18 +6,20 @@ require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
+
 exports.showRegister = async (req, res) => {
     try {
         if (req.user) {
-            // User is authenticated, redirect to dashboard or profile
-            return res.redirect('/dashboard');
+            return res.redirect('/admin/dashboard');
         }
         res.render('auth/register');
     } catch (err) {
+        console.error('Error showing registration page:', err);
         res.status(500).send('Server error');
     }
 };
 
+// Handle user registration
 exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -41,19 +43,22 @@ exports.register = async (req, res) => {
 
         res.redirect('/login');
     } catch (error) {
-        console.error(error);
+        console.error('Error registering user:', error);
         res.status(500).send('Server error');
     }
 };
 
+// Show login page
 exports.showLogin = async (req, res) => {
     try {
         if (req.user) {
-            // User is authenticated, redirect to dashboard or profile
-            return res.redirect('/dashboard');
+            return res.redirect('/admin/dashboard');
         }
-        res.render('auth/login');
+        res.render('auth/login', {
+            layout: 'layouts/auth'
+        });
     } catch (err) {
+        console.error('Error showing login page:', err);
         res.status(500).send('Server error');
     }
 };
@@ -61,6 +66,10 @@ exports.showLogin = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).send('Email and password are required');
+        }
 
         const user = await User.findOne({ email });
         if (!user) return res.status(400).send('Invalid email or password');
@@ -72,21 +81,28 @@ exports.login = async (req, res) => {
 
         res.cookie('token', token, { httpOnly: true });
 
-        res.redirect('/dashboard');
+        if (!token) {
+            return res.redirect('/login');
+        }
+        res.redirect('/admin/dashboard');
     } catch (error) {
-        console.error(error);
+        console.error('Error logging in user:', error);
         res.status(500).send('Server error');
     }
 };
 
+
 exports.logout = (req, res) => {
-    res.clearCookie('token');
-    res.redirect('/login');
+    res.clearCookie('token'); // Clear the token cookie
+    res.redirect('/login'); // Redirect to login page after logout
 };
 
+// Show user profile
 exports.profile = (req, res) => {
     if (!req.user) {
-        return res.redirect('/login'); // Redirect to login if not authenticated
+        return res.redirect('/login');
     }
-    res.render('auth/profile');
+    res.render('auth/profile', {
+        layout: 'layouts/admin'
+    });
 };

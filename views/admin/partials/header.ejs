@@ -36,12 +36,12 @@
             <li class="dropdown">
                 <a class="nav-link dropdown-toggle arrow-none nav-user" data-bs-toggle="dropdown" href="#"
                     role="button" aria-haspopup="false" aria-expanded="false">
-                    <span class="account-user-avatar">\
+                    <span class="account-user-avatar">
                             <img src="/images/users/avatar-2.jpg" alt="user-image" width="32" class="rounded-circle">
                     </span>
                     <span class="d-lg-block d-none">
                         <h5 class="my-0 fw-normal">
-                            <span class="user-profile-name">Sunny</span> <i
+                            <span class="user-profile-name"><%= userInfo.name %></span> <i
                                 class="ri-arrow-down-s-line d-none d-sm-inline-block align-middle"></i>
                         </h5>
                     </span>
@@ -49,7 +49,7 @@
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
 
                     <!-- item-->
-                    <a href="/profile" class="dropdown-item">
+                    <a href="/admin/profile" class="dropdown-item">
                         <i class="ri-account-circle-line fs-18 align-middle me-1"></i>
                         <span>Profile</span>
                     </a>
