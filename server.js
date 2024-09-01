@@ -30,14 +30,11 @@ app.use('/admin', (req, res, next) => {
 });
 
 /* Define routes for different sections */
-const apiAuthRoutes = require('./app/routes/api/AuthRoute');
-const adminAuthRoutes = require('./app/routes/admin/AuthRoute');
-const adminDashboardRoutes = require('./app/routes/admin/DashboardRoute');
+const adminRoutes = require('./app/routes/admin/AdminRoute');
+app.use('/', adminRoutes);
 
-// Use routes
-app.use('/', adminAuthRoutes);
-app.use('/api', apiAuthRoutes);
-app.use('/admin', adminDashboardRoutes);
+const apiRoutes = require('./app/routes/api/ApiRoute');
+app.use('/api', apiRoutes);
 
 app.get('/', (req, res) => {
     res.render('index');

@@ -6,10 +6,14 @@ require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
-exports.showRegister = async(req, res) => {
-    try{
+exports.showRegister = async (req, res) => {
+    try {
+        if (req.user) {
+            // User is authenticated, redirect to dashboard or profile
+            return res.redirect('/dashboard');
+        }
         res.render('auth/register');
-    }catch(err){
+    } catch (err) {
         res.status(500).send('Server error');
     }
 };
@@ -18,10 +22,10 @@ exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        if (!name || !email || !password ) {
+        if (!name || !email || !password) {
             return res.status(400).send('All fields are required');
         }
-                      
+
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).send('User already exists');
@@ -29,8 +33,8 @@ exports.register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
-            name, 
-            email, 
+            name,
+            email,
             password: hashedPassword,
         });
         await newUser.save();
@@ -42,8 +46,16 @@ exports.register = async (req, res) => {
     }
 };
 
-exports.showLogin = (req, res) => {
-    res.render('auth/login');
+exports.showLogin = async (req, res) => {
+    try {
+        if (req.user) {
+            // User is authenticated, redirect to dashboard or profile
+            return res.redirect('/dashboard');
+        }
+        res.render('auth/login');
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
 };
 
 exports.login = async (req, res) => {
@@ -57,11 +69,10 @@ exports.login = async (req, res) => {
         if (!isPasswordMatch) return res.status(400).send('Invalid email or password');
 
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-        
+
         res.cookie('token', token, { httpOnly: true });
 
-        // res.redirect('/profile');
-        res.redirect('/admin/dashboard');
+        res.redirect('/dashboard');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
@@ -74,6 +85,8 @@ exports.logout = (req, res) => {
 };
 
 exports.profile = (req, res) => {
-    // res.sendFile(path.join(__dirname, '../../views/profile.html'));
+    if (!req.user) {
+        return res.redirect('/login'); // Redirect to login if not authenticated
+    }
     res.render('auth/profile');
 };
