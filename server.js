@@ -14,6 +14,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+// console.log('Path to views:', path.join(__dirname, 'views'));
 
 app.use(ejsLayouts);
 /* app.set('layout', 'layouts/admin');  */
@@ -43,7 +44,7 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-// Error handling middleware
+/* Error handling middleware */
 app.use((err, req, res, next) => {
     console.error('Server error:', err);
     res.status(500).json({

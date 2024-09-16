@@ -1,0 +1,64 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card mt-20">
+            <div class="card-header">
+                <h4 class="mb-0">Add New User</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="msg-form" action="/admin/user/store" id="userForm">
+                    <%- include('_form') %>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../partials/extra-script') %>
+<script>
+    $(document).on('submit','#userForm', function(event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+        var url = $(this).attr('action');
+        $('.validation-error-block').remove();
+        <!-- $(".submitBtn").attr('disabled', true); -->
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire('Success!', response.message, 'success');
+                    $('#userForm')[0].reset();
+                    $('.text-danger').empty();
+                } else {
+                    handleErrors(response.errors);
+                }
+                $(".submitBtn").attr('disabled', false); // Enable the button
+            },
+            error: function(response) {
+                $(".submitBtn").attr('disabled', false); // Enable the button
+                var errors = response.responseJSON.errors || {};
+                handleErrors(errors);
+            }
+        });
+    });
+
+    function handleErrors(errors) {
+        $('.text-danger').empty();
+        $('.validation-error-block').remove();
+
+        $.each(errors, function(key, items) {
+            var errorHtml = '<span class="validation-error-block" style="color: red;">' + items.join('<br>') + '</span>';
+            var inputElement = $("input[name='" + key + "'], select[name='" + key + "'], textarea[name='" + key + "']");
+            if (inputElement.length) {
+                inputElement.after(errorHtml);
+            }
+        });
+        if ($.isEmptyObject(errors)) {
+            Swal.fire('Error!', 'There were some problems with your submission.', 'error');
+        }
+    }
+</script>

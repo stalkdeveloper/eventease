@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card mt-20">
+            <div class="card-header">
+                <!-- <h4 class="mb-0">User</h4> -->
+                <div class="row align-items-center gy-3">
+                    <div class="col">
+                        <h4 class="mb-0 text-nowrap">User</h4>
+                    </div>
+                    <div class="col-auto text-nowrap">
+                        <div class="filter-container">
+                            <div class="d-flex align-items-center dropdown">
+                                <!-- <label for="" class="me-3"></label> -->
+                                <!-- <input type="text" name="date_range" class="form-control date_range" id="date_range" placeholder="Choose date" readonly autocomplete="off"> -->
+                                <a href="/admin/user/create" class="btn btn-primary btn-sm">Create</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive common-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Date of Birth</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% users.forEach((user, index) => { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= user.name %></td>
+                                    <td><%= user.username || 'N/A' %></td>
+                                    <td><%= user.email %></td>
+                                    <td><%= user.dateofbirth ? new Date(user.dateofbirth).toLocaleDateString() : null %></td>
+                                    <td>
+                                        <!-- Add actions like edit or delete here -->
+                                        <a href="/admin/users/edit/<%= user._id %>" class="btn btn-primary btn-sm">Edit</a>
+                                        <a href="/admin/users/delete/<%= user._id %>" class="btn btn-danger btn-sm">Delete</a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

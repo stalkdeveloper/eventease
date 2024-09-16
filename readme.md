@@ -90,7 +90,7 @@ project-root/
 │   │   └── list.ejs
 │   ├── partials/
 │   │   ├── header.ejs
-│   │   └── footer.ejs
+│   │   └── footer.ejs, fscript.ejs and extra-script.ejs etc.
 │   └── dashboard.ejs
 ├── auth/
 │   ├── login.ejs
