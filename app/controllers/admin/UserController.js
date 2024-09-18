@@ -1,12 +1,12 @@
 const User = require('../../models/User');
-const { validateUserInput } = require('../../validations/admin/UserValidation');
+const { validationUserInput } = require('../../validations/admin/UserValidation');
 const standardResponse = require('../../utils/ApiJsonResponse');
 exports.index = async(req, res) => {
     try {
         const users = await User.find({ delete_at: null });
         res.render('admin/user/index', { users });
     } catch (err) {
-        // res.status(500).json(helper.errorResponse('Error retrieving users', { global: [err.message] }));
+        // res.status(500).json(standardResponse.errorResponse('Error retrieving users', { global: [err.message] }));
     }
 }
 
@@ -22,12 +22,11 @@ exports.create = async(req, res) => {
     }
 }
 
-exports.store = async(req, res) => {
+exports.store = async (req, res) => {
     try {
-        const validationErrors = await validateUserInput(req.body);
-        console.log(validationErrors);
+        const validationErrors = await validationUserInput(req.body);
         if (Object.keys(validationErrors.errors).length > 0) {
-            return res.status(400).json(helper.errorResponse('Validation failed', validationErrors.errors));
+            return res.status(400).json(standardResponse.errorResponse('Validation failed', validationErrors.errors));
         }
 
         const user = new User({

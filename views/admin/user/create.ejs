@@ -39,9 +39,11 @@
                 $(".submitBtn").attr('disabled', false); // Enable the button
             },
             error: function(response) {
-                $(".submitBtn").attr('disabled', false); // Enable the button
-                var errors = response.responseJSON.errors || {};
-                handleErrors(errors);
+                $(".submitBtn").attr('disabled', false);
+                var errors = response.responseJSON.error;
+                if(errors){
+                    handleErrors(errors);
+                }
             }
         });
     });
@@ -49,12 +51,17 @@
     function handleErrors(errors) {
         $('.text-danger').empty();
         $('.validation-error-block').remove();
-
+    
         $.each(errors, function(key, items) {
-            var errorHtml = '<span class="validation-error-block" style="color: red;">' + items.join('<br>') + '</span>';
-            var inputElement = $("input[name='" + key + "'], select[name='" + key + "'], textarea[name='" + key + "']");
+
+            const errorHtml = `<span class="validation-error-block" style="color: red;">${items.join('<br>')}</span>`;
+            const inputElement = $(`input[name='${key}'], select[name='${key}'], textarea[name='${key}']`);
             if (inputElement.length) {
-                inputElement.after(errorHtml);
+                if(key == 'password'){
+                    inputElement.parent().after(errorHtml);
+                }else{
+                    inputElement.after(errorHtml);
+                }
             }
         });
         if ($.isEmptyObject(errors)) {

@@ -22,6 +22,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  country_code: {
+    type: String,
+    required: false
+  },
+  mobile_number: {
+    type: String,
+    required: false
+  },
+  status: {
+    type: Number,
+    enum: [0, 1],
+    default: 1
+  },
   deleted_at: {
     type: Date,
     required: false
