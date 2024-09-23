@@ -1,3 +1,9 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+<style>
+    .iti {
+        width: 100%;
+    }
+</style>
 <div class="row">
     <div class="col-12">
         <div class="card mt-20">
@@ -13,14 +19,76 @@
     </div>
 </div>
 <%- include('../partials/extra-script') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function getPublicIPAddress() {
+            return fetch('https://api64.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => data.ip)
+                .catch(() => "unknown");
+        }
+
+        var input = document.querySelector("#mobile_number");
+        var iti = window.intlTelInput(input, {
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            initialCountry: "auto",
+            geoIpLookup: function(callback) {
+                fetch('https://ipinfo.io/json')
+                    .then(response => response.json())
+                    .then(data => callback(data.country))
+                    .catch(() => callback("us"));
+            },
+            separateDialCode: true
+        });
+
+        function getUserTimeZone() {
+            return Intl.DateTimeFormat().resolvedOptions().timeZone;
+        }
+
+        var form = document.querySelector("#userForm");
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            var fullPhoneNumber = iti.getNumber();
+            var countryCode = iti.getSelectedCountryData().dialCode;
+            document.getElementById("country_code").value = countryCode;
+
+            /* getUserLocation().then(location => {
+                console.log("Latitude: " + location.latitude);
+                console.log("Longitude: " + location.longitude);
+            }).catch(error => {
+                console.error(error);
+            }); */
+            
+            // Additional data from IP address
+            getPublicIPAddress().then(ip => {
+                // console.log("IP Address: " + ip);
+            });
+
+            var userCountry = iti.getSelectedCountryData().name;
+            var userTimeZone = getUserTimeZone();
+
+            /* console.log("Country: " + userCountry);
+            console.log("Timezone: " + userTimeZone); */
+
+        });
+    });
+</script>
 <script>
     $(document).on('submit','#userForm', function(event) {
         event.preventDefault();
 
+        // var formData = new FormData(this);
         var formData = new FormData(this);
+        formData.append('country_code', document.getElementById("country_code").value);
+        for (var pair of formData.entries()) {
+            console.log(pair[0] + ', ' + pair[1]); 
+        }
+        
         var url = $(this).attr('action');
         $('.validation-error-block').remove();
-        <!-- $(".submitBtn").attr('disabled', true); -->
+        //$(".submitBtn").attr('disabled', true);
 
         $.ajax({
             url: url,
@@ -51,21 +119,24 @@
     function handleErrors(errors) {
         $('.text-danger').empty();
         $('.validation-error-block').remove();
-    
+        
         $.each(errors, function(key, items) {
-
-            const errorHtml = `<span class="validation-error-block" style="color: red;">${items.join('<br>')}</span>`;
             const inputElement = $(`input[name='${key}'], select[name='${key}'], textarea[name='${key}']`);
-            if (inputElement.length) {
-                if(key == 'password'){
+            if (inputElement.length && inputElement.val().trim() === '') {
+                const errorHtml = `<span class="validation-error-block" style="color: red;">${items.join('<br>')}</span>`;
+                
+                if (key === 'password') {
                     inputElement.parent().after(errorHtml);
-                }else{
+                } else if (key === 'mobile_number') {
+                    inputElement.parent().after(errorHtml);
+                } else {
                     inputElement.after(errorHtml);
                 }
             }
         });
+    
         if ($.isEmptyObject(errors)) {
             Swal.fire('Error!', 'There were some problems with your submission.', 'error');
         }
-    }
+    }    
 </script>

@@ -24,7 +24,9 @@ exports.create = async(req, res) => {
 
 exports.store = async (req, res) => {
     try {
+        console.log('Received body:', req.body); // Log the incoming data
         const validationErrors = await validationUserInput(req.body);
+        
         if (Object.keys(validationErrors.errors).length > 0) {
             return res.status(400).json(standardResponse.errorResponse('Validation failed', validationErrors.errors));
         }
@@ -32,12 +34,16 @@ exports.store = async (req, res) => {
         const user = new User({
             name: req.body.name,
             email: req.body.email,
-            dateofbirth: req.body.dateofbirth
+            username: req.body.username,
+            dateofbirth: req.body.dateofbirth,
+            country_code: req.body.country_code,
+            mobile_number: req.body.mobile_number,
         });
 
         const data = await user.save();
         res.status(201).json(standardResponse.successResponse('User created successfully', data));
     } catch (err) {
+        console.error('Error saving user:', err); // Log the error
         res.status(500).json(standardResponse.errorResponse('Oops, Something went wrong!', { error: err.message }));
     }
-}
+};

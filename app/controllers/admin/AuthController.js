@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/User');
+const { validationUserInput } = require('../../validations/admin/UserValidation');
+const standardResponse = require('../../utils/ApiJsonResponse');
 const path = require('path');
 require('dotenv').config();
 
@@ -22,7 +24,7 @@ exports.showRegister = async (req, res) => {
 // Handle user registration
 exports.register = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        /* const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
             return res.status(400).send('All fields are required');
@@ -31,8 +33,14 @@ exports.register = async (req, res) => {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).send('User already exists');
-        }
+        } */
 
+        console.log('body data: ', req.body);
+        const validationErrors = await validationUserInput(req.body);
+        
+        if (Object.keys(validationErrors.errors).length > 0) {
+            return res.status(400).json(standardResponse.errorResponse('Validation failed', validationErrors.errors));
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
             name,
